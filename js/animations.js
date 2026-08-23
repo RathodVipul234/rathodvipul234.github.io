@@ -58,7 +58,7 @@ class Animations {
         const texts = [
             'Vipul Rathod',
             'Python Developer',
-            'Tech Lead',
+            'Team Lead',
             'AI/LLM Expert',
             'Full Stack Developer',
             'Problem Solver'
