@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free LLM API with AgentRouter in Python | Vipul Rathod</title>
+    <meta name="description" content="Step-by-step guide to using a free LLM API with AgentRouter in Python, including CLI, .env setup, Anthropic-compatible calls, and troubleshooting.">
+    <meta name="keywords" content="free LLM API, AgentRouter Python, Anthropic compatible API, litellm unauthorized client detected fix, Python LLM client, Vipul Rathod">
+    <meta name="author" content="Vipul Rathod">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://vipulrathod.site/blog/free-llm-api-agentrouter-python.html">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vipulrathod.site/blog/free-llm-api-agentrouter-python.html">
+    <meta property="og:title" content="Free LLM API with AgentRouter in Python | Vipul Rathod">
+    <meta property="og:description" content="Step-by-step guide to using a free LLM API with AgentRouter in Python, including CLI, .env setup, Anthropic-compatible calls, and troubleshooting.">
+    <meta property="og:image" content="https://vipulrathod.site/banner.jpg">
+    <meta property="og:site_name" content="Vipul Rathod">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free LLM API with AgentRouter in Python | Vipul Rathod">
+    <meta name="twitter:description" content="Step-by-step guide to using a free LLM API with AgentRouter in Python, including CLI, .env setup, Anthropic-compatible calls, and troubleshooting.">
+    <meta name="twitter:image" content="https://vipulrathod.site/banner.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Free LLM API with AgentRouter in Python",
+      "description": "Step-by-step guide to using a free LLM API with AgentRouter in Python, including CLI, .env setup, Anthropic-compatible calls, and troubleshooting.",
+      "image": "https://vipulrathod.site/banner.jpg",
+      "datePublished": "2026-08-23",
+      "dateModified": "2026-08-23",
+      "author": { "@type": "Person", "name": "Vipul Rathod", "url": "https://vipulrathod.site/" },
+      "publisher": { "@type": "Person", "name": "Vipul Rathod" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://vipulrathod.site/blog/free-llm-api-agentrouter-python.html" }
+    }
+    </script>
+    <style>
+        .blog-post {
+            min-height: 100vh;
+            padding: 120px 0 80px;
+        }
+        .blog-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .blog-category-tag {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #6366f1, #22d3ee);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .blog-post-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .blog-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+        .blog-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .blog-featured-image {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 60px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: var(--gradient-card);
+            border: 1px solid var(--color-border);
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .blog-featured-image svg {
+            width: 120px;
+            height: 120px;
+            color: var(--color-primary-light);
+            opacity: 0.5;
+        }
+        .blog-body {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--color-text-secondary);
+        }
+        .blog-body h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin: 50px 0 20px;
+        }
+        .blog-body h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 40px 0 15px;
+        }
+        .blog-body p {
+            margin-bottom: 25px;
+        }
+        .blog-body ul, .blog-body ol {
+            margin-bottom: 25px;
+            padding-left: 30px;
+        }
+        .blog-body li {
+            margin-bottom: 12px;
+        }
+        .blog-body code {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--color-primary);
+        }
+        .blog-body pre {
+            background: var(--color-bg-tertiary);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            overflow-x: auto;
+            margin: 30px 0;
+            border: 1px solid var(--color-border);
+        }
+        .blog-body pre code {
+            background: none;
+            padding: 0;
+            color: var(--color-text);
+        }
+        .blog-body blockquote {
+            border-left: 4px solid var(--color-secondary);
+            padding-left: 25px;
+            margin: 30px 0;
+            font-style: italic;
+            color: var(--color-text);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 40px;
+            transition: all var(--transition-normal);
+        }
+        .back-link:hover {
+            gap: 15px;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 30px 0;
+        }
+        .tech-tag {
+            padding: 8px 16px;
+            background: var(--gradient-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            color: var(--color-text);
+        }
+        .tip-box {
+            background: rgba(34, 211, 238, 0.08);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 20px 25px;
+            margin: 30px 0;
+        }
+        .tip-box h4 {
+            color: var(--color-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cta-box {
+            margin: 45px 0;
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(34, 211, 238, 0.18));
+            border: 1px solid rgba(129, 140, 248, 0.45);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+        .cta-box h3 {
+            margin: 0 0 10px;
+            font-size: 1.55rem;
+            color: var(--color-text);
+        }
+        .cta-box p {
+            margin-bottom: 18px;
+            color: var(--color-text-secondary);
+        }
+        .cta-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            transition: transform var(--transition-fast), opacity var(--transition-fast);
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+        .cta-btn.repo {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        .cta-btn.credit {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+
+        @media (max-width: 768px) {
+            .blog-post {
+                padding: 100px 20px 60px;
+            }
+            .blog-header {
+                margin-bottom: 40px;
+            }
+            .blog-post-title {
+                font-size: 1.8rem;
+                line-height: 1.3;
+            }
+            .blog-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .blog-featured-image {
+                margin-bottom: 40px;
+                border-radius: var(--radius-lg);
+            }
+            .blog-body {
+                font-size: 1rem;
+                line-height: 1.8;
+                padding: 0 10px;
+            }
+            .blog-body h2 {
+                font-size: 1.4rem;
+                margin: 35px 0 15px;
+            }
+            .blog-body h3 {
+                font-size: 1.2rem;
+                margin: 30px 0 12px;
+            }
+            .blog-body pre {
+                padding: 15px;
+                font-size: 0.85rem;
+                margin: 20px -10px;
+                border-radius: var(--radius-md);
+            }
+            .blog-body blockquote {
+                padding-left: 15px;
+                margin: 20px 0;
+            }
+            .blog-body ul, .blog-body ol {
+                padding-left: 20px;
+            }
+            .tech-stack {
+                gap: 8px;
+            }
+            .tech-tag {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .back-link {
+                margin-bottom: 30px;
+                font-size: 0.9rem;
+            }
+            .nav-container {
+                padding: 0 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+            .tip-box {
+                padding: 15px 18px;
+                margin: 20px 0;
+            }
+            .cta-box {
+                padding: 20px;
+            }
+            .cta-box h3 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .blog-post {
+                padding: 90px 15px 50px;
+            }
+            .blog-post-title {
+                font-size: 1.5rem;
+            }
+            .blog-body {
+                font-size: 0.95rem;
+                padding: 0;
+            }
+            .blog-body pre {
+                margin: 20px -15px;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        (function() {
+            var ua = navigator.userAgent || '';
+            if (/Instagram|FBAN|FBAV|Twitter|Line|WhatsApp|Snapchat/i.test(ua)) {
+                document.body.classList.add('in-app-browser');
+            }
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        })();
+    </script>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-text">Vipul Rathod</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="../index.html#about" class="nav-link">About</a></li>
+                <li><a href="../index.html#skills" class="nav-link">Skills</a></li>
+                <li><a href="../index.html#projects" class="nav-link">Projects</a></li>
+                <li><a href="../index.html#blog" class="nav-link active">Blog</a></li>
+                <li><a href="../index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <article class="blog-post">
+            <div class="container">
+                <a href="../index.html#blog" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Articles
+                </a>
+
+                <header class="blog-header">
+                    <span class="blog-category-tag">AI/LLM</span>
+                    <h1 class="blog-post-title">How I Built a Free LLM API Workflow with AgentRouter in Python</h1>
+                    <div class="blog-meta">
+                        <span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            11 min read
+                        </span>
+                        <span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            August 2026
+                        </span>
+                    </div>
+                </header>
+
+                <div class="blog-featured-image">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/>
+                        <circle cx="9" cy="13" r="1"/>
+                        <circle cx="15" cy="13" r="1"/>
+                    </svg>
+                </div>
+
+                <div class="blog-body">
+                    <p>
+                        Developers keep searching for one thing: a <strong>free LLM API</strong> that is simple to integrate and reliable in production-style workflows. In this guide, I share exactly how I set up AgentRouter with a Python toolkit and got working CLI and library calls in minutes.
+                    </p>
+
+                    <div class="cta-box">
+                        <h3>Launch Faster: Grab the Repo + $200 Free Credits</h3>
+                        <p>
+                            Start building right now. Use the toolkit source code and claim your lifetime free credits to test real model workflows today.
+                        </p>
+                        <div class="cta-actions">
+                            <a class="cta-btn repo" href="https://github.com/RathodVipul234/agentrouter-toolkit" target="_blank" rel="noopener noreferrer">View GitHub Repo</a>
+                            <a class="cta-btn credit" href="https://agentrouter.org/register?aff=7lUt" target="_blank" rel="noopener noreferrer">Get $200 Free Credits</a>
+                        </div>
+                    </div>
+
+                    <h2>Why AgentRouter + Python?</h2>
+                    <p>
+                        AgentRouter exposes an Anthropic-Messages-compatible endpoint. That means you can keep a familiar request format while trying multiple models behind one gateway.
+                    </p>
+                    <p>
+                        The tricky part is client fingerprinting. Some third-party clients can fail with <code>unauthorized client detected</code>. The toolkit solves this by patching request headers for AgentRouter traffic and by providing a reliable fallback path.
+                    </p>
+
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Fast Setup</span>
+                        <span class="tech-tag">litellm</span>
+                        <span class="tech-tag">httpx</span>
+                        <span class="tech-tag">Anthropic-Compatible</span>
+                        <span class="tech-tag">.env Support</span>
+                    </div>
+
+                    <h2>Gateway Basics</h2>
+                    <ul>
+                        <li><strong>Base URL:</strong> <code>https://agentrouter.org</code></li>
+                        <li><strong>Endpoint:</strong> <code>POST /v1/messages</code></li>
+                        <li><strong>Auth:</strong> <code>Authorization: Bearer &lt;token&gt;</code></li>
+                    </ul>
+
+                    <h2>Quick Setup</h2>
+                    <h3>1. Install dependencies</h3>
+                    <pre><code>pip install -r requirements.txt</code></pre>
+
+                    <h3>2. Configure environment</h3>
+                    <pre><code>copy .env.example .env</code></pre>
+
+                    <pre><code>AGENTROUTER_TOKEN=your_token_here
+AGENTROUTER_BASE_URL=https://agentrouter.org
+ANTHROPIC_MODEL=claude-opus-4-8</code></pre>
+
+                    <h3>3. Run from CLI</h3>
+                    <pre><code>python -m agentrouter "Write a concise launch announcement"
+python -m agentrouter -m claude-opus-5 "Explain RAG in simple terms"
+python -m agentrouter --test</code></pre>
+
+                    <h2>Python Library Usage</h2>
+                    <pre><code>from agentrouter import ask, call_model
+
+print(ask(prompt="What is AgentRouter in one sentence?"))
+
+text, via = call_model(
+    "gpt-5.6-sol",
+    [{"role": "user", "content": "Reply with pong"}],
+    64,
+)
+print(via, text)</code></pre>
+
+                    <h2>How the Toolkit Improves Reliability</h2>
+                    <ol>
+                        <li>Loads configuration from <code>.env</code> automatically.</li>
+                        <li>Uses environment-based token handling instead of hardcoded secrets.</li>
+                        <li>Handles missing token with a clean CLI error.</li>
+                        <li>Tries litellm first, then raw API fallback if response parsing fails.</li>
+                        <li>Supports changing the default model via <code>ANTHROPIC_MODEL</code>.</li>
+                    </ol>
+
+                    <div class="tip-box">
+                        <h4>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4M12 8h.01"/>
+                            </svg>
+                            Pro Tip
+                        </h4>
+                        <p style="margin-bottom: 0;">
+                            Keep <code>-m MODEL</code> for per-command model choice and set <code>ANTHROPIC_MODEL</code> for your day-to-day default. This gives fast iteration without editing code.
+                        </p>
+                    </div>
+
+                    <h2>Troubleshooting</h2>
+                    <h3>Missing AGENTROUTER_TOKEN</h3>
+                    <p>
+                        Create <code>.env</code> from <code>.env.example</code>, set the token, and re-run your command.
+                    </p>
+
+                    <h3>unauthorized client detected</h3>
+                    <p>
+                        This usually means your client headers do not match expected SDK behavior. Use the toolkit path or the official Anthropic SDK configuration.
+                    </p>
+
+                    <h3>Authentication failed</h3>
+                    <p>
+                        Verify token value, check for stale shell variables, and confirm <code>AGENTROUTER_BASE_URL</code> is correct.
+                    </p>
+
+                    <h2>Final Thoughts</h2>
+                    <p>
+                        If your goal is to ship quickly on top of a free LLM API, this setup is practical: one env file, one CLI, and one Python API surface. It is simple enough for prototypes and structured enough for real workloads.
+                    </p>
+
+                    <blockquote>
+                        A good developer workflow is not just about model quality, it is about predictable integration, clear errors, and fast iteration.
+                    </blockquote>
+
+                    <p>
+                        Explore more technical writeups in my blog, and connect with me on GitHub for backend and AI/LLM engineering projects.
+                    </p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">Vipul Rathod</span>
+                    <p>Python Developer & Team Lead building scalable solutions.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="../index.html#hero">Home</a>
+                    <a href="../index.html#about">About</a>
+                    <a href="../index.html#projects">Projects</a>
+                    <a href="../index.html#contact">Contact</a>
+                    <a href="https://linkedin.com/in/rathodvipul99" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a href="https://github.com/RathodVipul234" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Vipul Rathod. All rights reserved.</p>
+                <p>Built with passion and code.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+                localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+            });
+        }
+
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
