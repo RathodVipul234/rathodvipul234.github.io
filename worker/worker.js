@@ -178,7 +178,7 @@ export default {
     } else if (pathname === '/contact') {
       if (body.website) return new Response('{"ok":true}', { headers }); // honeypot: silently drop bots
       const { name, email, subject, message } = body;
-      if (!name || !email || !subject || !message || !/^\S+@\S+\.\S+$/.test(email)) {
+      if (!name || !email || !subject || !message || !/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(email)) {
         return new Response('{"ok":false}', { status: 422, headers });
       }
       mail = contactEmail(request, { name, email, subject, message });

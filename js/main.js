@@ -190,6 +190,7 @@ class Portfolio {
             submitBtn.disabled = true;
 
             let ok = false;
+            let invalid = false;
             try {
                 const res = await fetch(window.NOTIFY_API + '/contact', {
                     method: 'POST',
@@ -197,12 +198,17 @@ class Portfolio {
                     body: JSON.stringify(Object.fromEntries(new FormData(form))),
                 });
                 ok = res.ok;
+                invalid = res.status === 422;
                 if (!ok) console.error('Contact form: server replied', res.status);
             } catch (err) {
                 console.error('Contact form: request failed', err);
             }
 
-            submitBtn.innerHTML = ok ? '<span>Message Sent!</span>' : '<span>Failed - email me directly</span>';
+            submitBtn.innerHTML = ok
+                ? '<span>Message Sent!</span>'
+                : invalid
+                    ? '<span>Please check your email address</span>'
+                    : '<span>Failed - email me directly</span>';
             if (ok) form.reset();
 
             setTimeout(() => {
