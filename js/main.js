@@ -180,26 +180,32 @@ class Portfolio {
         const form = document.querySelector('.contact-form');
         if (!form) return;
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalHTML = submitBtn.innerHTML;
 
-            // Show sending state
             submitBtn.innerHTML = '<span>Sending...</span>';
             submitBtn.disabled = true;
 
-            // Simulate form submission
-            setTimeout(() => {
-                submitBtn.innerHTML = '<span>Message Sent!</span>';
-                form.reset();
+            let ok = false;
+            try {
+                const res = await fetch(window.NOTIFY_API + '/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(new FormData(form))),
+                });
+                ok = res.ok;
+            } catch (err) { /* network error */ }
 
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalHTML;
-                    submitBtn.disabled = false;
-                }, 2000);
-            }, 1000);
+            submitBtn.innerHTML = ok ? '<span>Message Sent!</span>' : '<span>Failed - email me directly</span>';
+            if (ok) form.reset();
+
+            setTimeout(() => {
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            }, 2500);
         });
 
         // Floating labels

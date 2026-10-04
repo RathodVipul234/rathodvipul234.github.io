@@ -1,0 +1,8 @@
+name = "portfolio-notify"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+TO_EMAIL = "rathodv9229@gmail.com"
+# Must be the email you signed up to Resend with when using the test sender
+FROM_EMAIL = "Portfolio <onboarding@resend.dev>"
