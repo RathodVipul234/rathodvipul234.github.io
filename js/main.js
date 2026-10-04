@@ -197,7 +197,10 @@ class Portfolio {
                     body: JSON.stringify(Object.fromEntries(new FormData(form))),
                 });
                 ok = res.ok;
-            } catch (err) { /* network error */ }
+                if (!ok) console.error('Contact form: server replied', res.status);
+            } catch (err) {
+                console.error('Contact form: request failed', err);
+            }
 
             submitBtn.innerHTML = ok ? '<span>Message Sent!</span>' : '<span>Failed - email me directly</span>';
             if (ok) form.reset();

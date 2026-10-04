@@ -7,9 +7,8 @@ const ALLOWED_ORIGINS = [
   'http://vipulrathod.site',
   'http://www.vipulrathod.site',
   'https://rathodvipul234.github.io',
-  'http://localhost:8000',
-  'http://127.0.0.1:8000',
 ];
+const LOCAL_ORIGIN = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -158,7 +157,7 @@ function contactEmail(request, { name, email, subject, message }) {
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
-    if (!ALLOWED_ORIGINS.includes(origin)) return new Response('Forbidden', { status: 403 });
+    if (!ALLOWED_ORIGINS.includes(origin) && !LOCAL_ORIGIN.test(origin)) return new Response('Forbidden', { status: 403 });
     const headers = cors(origin);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
