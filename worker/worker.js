@@ -1,7 +1,15 @@
 // Cloudflare Worker: emails visit + contact-form notifications via Resend.
 // Secret (set with `wrangler secret put RESEND_API_KEY`). Other settings are in wrangler.toml [vars].
 
-const ALLOWED_ORIGINS = ['https://vipulrathod.site', 'https://www.vipulrathod.site'];
+const ALLOWED_ORIGINS = [
+  'https://vipulrathod.site',
+  'https://www.vipulrathod.site',
+  'http://vipulrathod.site',
+  'http://www.vipulrathod.site',
+  'https://rathodvipul234.github.io',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+];
 
 const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
